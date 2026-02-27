@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>美食店铺查询</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 可爱字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    <style>
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            font-family: 'ZCOOL KuaiLe', '微软雅黑', sans-serif;
+        }
+        .header-banner {
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto 30px auto;
+            display: block;
+        }
+        .cute-title {
+            font-size: 2.8rem;
+            color: #ff7e5f;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-align: center;
+            margin-bottom: 18px;
+            text-shadow: 1px 2px 8px #fff0f0;
+        }
+        .search-area {
+            background: rgba(255,255,255,0.7);
+            border-radius: 22px;
+            box-shadow: 0 4px 32px 0 rgba(110,198,255,0.10);
+            padding: 28px 24px 18px 24px;
+            margin-bottom: 38px;
+            backdrop-filter: blur(8px);
+        }
+        .shop-card {
+            border: none;
+            border-radius: 22px;
+            padding: 22px 20px 18px 20px;
+            margin-bottom: 28px;
+            background: rgba(255,255,255,0.85);
+            box-shadow: 0 4px 24px 0 rgba(110,198,255,0.13);
+            transition: transform 0.18s, box-shadow 0.18s;
+            position: relative;
+            backdrop-filter: blur(6px);
+        }
+        .shop-card:hover {
+            transform: scale(1.045) rotate(-1deg);
+            box-shadow: 0 12px 32px 0 rgba(255, 177, 153, 0.18);
+        }
+        .shop-card .food-emoji {
+            font-size: 2.3rem;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+        }
+        .badge {
+            font-size: 1em;
+            border-radius: 12px;
+            margin-right: 6px;
+            background: #b2f7ef;
+            color: #333;
+        }
+        .badge.bg-primary {
+            background: #6ec6ff !important;
+            color: #fff !important;
+        }
+        .badge.bg-info {
+            background: #ffb199 !important;
+            color: #fff !important;
+        }
+        .btn-cute {
+            background: linear-gradient(90deg, #ffb199 0%, #ff0844 100%);
+            color: #fff;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.1em;
+            padding: 8px 22px;
+            box-shadow: 0 2px 8px #ffb19944;
+            transition: background 0.2s;
+        }
+        .btn-cute:hover {
+            background: linear-gradient(90deg, #ff0844 0%, #ffb199 100%);
+            color: #fff;
+        }
+        .form-control, .btn-cute {
+            font-family: 'ZCOOL KuaiLe', '微软雅黑', sans-serif;
+        }
+        .no-result {
+            text-align:center;
+            color:#6ec6ff;
+            font-size:1.2em;
+            margin-top: 40px;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+<div class="container py-5">
+    <div class="cute-title">🍰 美食店铺查询 🍜</div>
+    <div class="search-area">
+        <form class="row g-3 mb-2" id="search-form" onsubmit="return false;">
+            <div class="col-md-4">
+                <input type="text" class="form-control" id="keyword" placeholder="输入关键词（店名/类型/区域）">
+            </div>
+            <div class="col-md-2">
+                <input type="number" class="form-control" id="min-price" placeholder="最低人均消费">
+            </div>
+            <div class="col-md-2">
+                <input type="number" class="form-control" id="max-price" placeholder="最高人均消费">
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-cute w-100" onclick="searchShops()">🍡 查询</button>
+            </div>
+        </form>
+    </div>
+    <div class="row" id="shop-list"></div>
+
+    <!-- 美食详情模态框 -->
+    <div class="modal fade" id="foodDetailModal" tabindex="-1" aria-labelledby="foodDetailModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="foodDetailModalLabel"></h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+          </div>
+          <div class="modal-body" id="food-detail-body">
+            <!-- 详情内容JS填充 -->
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+<script>
+function getFoodEmoji(type) {
+    // 可根据类型返回不同emoji
+    if (type.includes('火锅')) return '🍲';
+    if (type.includes('甜品') || type.includes('蛋糕')) return '🍰';
+    if (type.includes('烧烤')) return '🍢';
+    if (type.includes('面')) return '🍜';
+    if (type.includes('咖啡')) return '☕';
+    if (type.includes('烤鸭')) return '🦆';
+    if (type.includes('牛排')) return '🥩';
+    if (type.includes('寿司')) return '🍣';
+    if (type.includes('炸鸡')) return '🍗';
+    return '🍴';
+}
+function searchShops() {
+    const keyword = $('#keyword').val().trim();
+    const minPrice = $('#min-price').val();
+    const maxPrice = $('#max-price').val();
+    $.ajax({
+        url: '/api/shop_search',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            keyword: keyword,
+            min_price: minPrice,
+            max_price: maxPrice
+        }),
+        success: function(res) {
+            const list = $('#shop-list');
+            list.empty();
+            if (!res.shops || res.shops.length === 0) {
+                list.html('<div class="no-result">没有找到符合条件的店铺 🍡</div>');
+                return;
+            }
+            res.shops.forEach(item => {
+                list.append(`
+                <div class="col-md-4">
+                    <div class="shop-card">
+                        <span class="food-emoji">${getFoodEmoji(item.type || '')}</span>
+                        <h4>${item.title}</h4>
+                        <p>
+                            <span class="badge bg-primary">${item.type}</span>
+                            <span class="badge bg-info">${item.area}</span>
+                        </p>
+                        <p>人均消费：${item.averge_price}</p>
+                        <p>评论数：${item.comment_count}</p>
+                        <p>收藏数：${item.favorite_count}</p>
+                        <button class="btn btn-cute btn-sm" onclick="showFoodDetail(${item.index})">🍽️ 查看详情</button>
+                    </div>
+                </div>
+                `);
+            });
+        }
+    });
+}
+
+// 弹出详情模态框
+function showFoodDetail(foodId) {
+    $.ajax({
+        url: '/api/food_detail',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ food_id: foodId }),
+        success: function(res) {
+            if (!res.success) {
+                alert(res.msg || '获取详情失败');
+                return;
+            }
+            const food = res.food;
+            $('#foodDetailModalLabel').text(food.name);
+            $('#food-detail-body').html(`
+                <p>人均消费: ${food.price}</p>
+                <p>类型: ${food.type}</p>
+                <p>区域: ${food.area}</p>
+                <p>推荐菜: ${food.recommend}</p>
+                <p>团购: ${food.group_purchase}</p>
+                <p>优惠: ${food.preferential}</p>
+                <p>评论数: ${food.comment_count}</p>
+                <p>收藏数: ${food.favorite_count}</p>
+            `);
+            var modal = new bootstrap.Modal(document.getElementById('foodDetailModal'));
+            modal.show();
+        }
+    });
+}
+</script>
+</body>
+</html> 

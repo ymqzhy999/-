@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>美食详情</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/dmaku2.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #fffbe6 0%, #ffe0e9 100%);
+            min-height: 100vh;
+            font-family: 'ZCOOL KuaiLe', '微软雅黑', sans-serif;
+        }
+        .food-detail {
+            max-width: 480px;
+            margin: 60px auto;
+            background: rgba(255,255,255,0.85);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px #ffb19944;
+            padding: 2.5rem 2rem 2rem 2rem;
+            backdrop-filter: blur(6px);
+            border: 2px solid #ffe0e9;
+            position: relative;
+        }
+        .food-title {
+            color: #ff7e5f;
+            font-size: 2.2rem;
+            font-family: 'ZCOOL KuaiLe', '微软雅黑', sans-serif;
+            margin-bottom: 1.2rem;
+            text-align: center;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 8px #ffb19933;
+        }
+        .food-info span, .food-info p {
+            display: block;
+            font-size: 1.1rem;
+            color: #ff7e5f;
+            margin-bottom: 0.7rem;
+            font-family: 'ZCOOL KuaiLe', '微软雅黑', sans-serif;
+        }
+        .food-info b {
+            color: #ff4e50;
+        }
+        .food-info {
+            margin-bottom: 1.5rem;
+        }
+        .favorite-btn {
+            display: block;
+            margin: 1.5rem auto 0 auto;
+            background: linear-gradient(90deg, #ffb199 0%, #ff7e5f 100%);
+            color: #fff;
+            border: none;
+            border-radius: 18px;
+            padding: 0.7rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            box-shadow: 0 2px 8px #ffb19944;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        .favorite-btn:hover {
+            background: linear-gradient(90deg, #ff7e5f 0%, #ffb199 100%);
+        }
+        .favorite-btn.favorited {
+            background: linear-gradient(90deg, #ff7e5f 0%, #ffb199 100%);
+        }
+        .favorite-count {
+            margin-left: 10px;
+            color: #ff7e5f;
+            font-size: 1rem;
+        }
+        .top-title {
+            display: block;
+            text-align: center;
+            font-size: 2rem;
+            color: #ffb199;
+            font-family: 'ZCOOL KuaiLe', '微软雅黑', sans-serif;
+            margin: 2rem 0 1.5rem 0;
+            text-shadow: 2px 2px 8px #fffbe6;
+            letter-spacing: 2px;
+            text-decoration: none;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .edit-modal {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+        }
+        .edit-modal h3 {
+            margin-top: 0;
+            color: #ff7e5f;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+        .edit-modal form div {
+            margin-bottom: 1rem;
+        }
+        .edit-modal label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ff7e5f;
+        }
+        .edit-modal input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ffb199;
+            border-radius: 4px;
+        }
+        .edit-modal button {
+            background: linear-gradient(90deg, #ffb199 0%, #ff7e5f 100%);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 0.5rem;
+        }
+        .edit-modal button:hover {
+            background: linear-gradient(90deg, #ff7e5f 0%, #ffb199 100%);
+        }
+    </style>
+</head>
+<body>
+
+
+    <div class="food-detail">
+        <!-- 没有图片字段，可以用默认图片或不显示 -->
+        <!-- <img src="{{ food.image }}" alt="{{ food.name }}" class="food-image"> -->
+        <div class="food-info">
+            <h2 class="food-title">🍲 {{ food.name }}</h2>
+            <span>💰 <b>人均消费：</b>{{ food.price }}</span>
+            <span>🍽️ <b>类型：</b>{{ food.type }}</span>
+            <span>📍 <b>区域：</b>{{ food.area }}</span>
+            <span>🌟 <b>推荐菜：</b>{{ food.recommend }}</span>
+            <span>🛒 <b>团购：</b>{{ food.group_purchase }}</span>
+            <span>🎁 <b>优惠：</b>{{ food.preferential }}</span>
+            <span>👥 <b>评论数：</b>{{ food.comment_count }}</span>
+            <span>❤️ <b>收藏数：</b>{{ food.favorite_count }}</span>
+            <button class="favorite-btn {{ 'favorited' if is_favorited else '' }}" onclick="toggleFavorite()">
+                {{ '💔 取消收藏' if is_favorited else '❤️ 收藏' }}
+            </button>
+            <span class="favorite-count">{{ food.favorite_count }}人收藏</span>
+            <button class="edit-btn" onclick="editFood()">✏️ 修改</button>
+            <button class="delete-btn" onclick="deleteFood()">🗑️ 删除</button>
+        </div>
+    </div>
+
+    <script src="../../static/js/jquery.js"></script>
+    <script src="../../static/lib/layer/layer.js"></script>
+    <script>
+        // 页面加载时记录浏览行为
+        document.addEventListener('DOMContentLoaded', function() {
+            recordBehavior("{{ food.id }}", 1);  // 1表示浏览行为
+        });
+
+        // 收藏按钮点击时记录收藏行为
+        function toggleFavorite() {
+            const foodId = "{{ food.id }}";
+            const isFavorited = "{{ 'true' if is_favorited else 'false' }}";
+            
+            fetch(isFavorited === 'true' ? '/user/favorite/remove' : '/user/favorite/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `id=${foodId}`
+            })
+            .then(response => response.text())
+            .then(result => {
+                if (result === 'success') {
+                    // 记录收藏行为
+                    recordBehavior(foodId, 2);  // 2表示收藏行为
+                    // 更新UI
+                    location.reload();
+                }
+            });
+        }
+
+        // 记录用户行为
+        function recordBehavior(itemId, behaviorType) {
+            fetch('/api/record_behavior', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    item_id: itemId,
+                    behavior_type: behaviorType
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log('行为记录成功');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // 修改店铺信息
+        function editFood() {
+            const foodId = "{{ food.id }}";
+            const foodName = "{{ food.name }}";
+            const foodPrice = "{{ food.price }}";
+            const foodType = "{{ food.type }}";
+            const foodArea = "{{ food.area }}";
+            const foodRecommend = "{{ food.recommend }}";
+            const foodGroupPurchase = "{{ food.group_purchase }}";
+            const foodPreferential = "{{ food.preferential }}";
+            const foodCommentCount = "{{ food.comment_count }}";
+            const foodFavoriteCount = "{{ food.favorite_count }}";
+
+            const modalHtml = `
+                <div class="edit-modal">
+                    <h3>修改店铺信息</h3>
+                    <form id="editForm">
+                        <div>
+                            <label for="name">店铺名称：</label>
+                            <input type="text" id="name" name="name" value="${foodName}" required>
+                        </div>
+                        <div>
+                            <label for="price">人均消费：</label>
+                            <input type="text" id="price" name="price" value="${foodPrice}" required>
+                        </div>
+                        <div>
+                            <label for="type">类型：</label>
+                            <input type="text" id="type" name="type" value="${foodType}" required>
+                        </div>
+                        <div>
+                            <label for="area">区域：</label>
+                            <input type="text" id="area" name="area" value="${foodArea}" required>
+                        </div>
+                        <div>
+                            <label for="recommend">推荐菜：</label>
+                            <input type="text" id="recommend" name="recommend" value="${foodRecommend}" required>
+                        </div>
+                        <div>
+                            <label for="group_purchase">团购：</label>
+                            <input type="text" id="group_purchase" name="group_purchase" value="${foodGroupPurchase}" required>
+                        </div>
+                        <div>
+                            <label for="preferential">优惠：</label>
+                            <input type="text" id="preferential" name="preferential" value="${foodPreferential}" required>
+                        </div>
+                        <div>
+                            <label for="comment_count">评论数：</label>
+                            <input type="number" id="comment_count" name="comment_count" value="${foodCommentCount}" required>
+                        </div>
+                        <div>
+                            <label for="favorite_count">收藏数：</label>
+                            <input type="number" id="favorite_count" name="favorite_count" value="${foodFavoriteCount}" required>
+                        </div>
+                        <button type="submit">保存</button>
+                        <button type="button" onclick="closeModal()">取消</button>
+                    </form>
+                </div>
+            `;
+
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = modalHtml;
+            document.body.appendChild(modal);
+
+            document.getElementById('editForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const formData = new FormData(this);
+                const data = {};
+                formData.forEach((value, key) => {
+                    data[key] = value;
+                });
+
+                fetch(`/edit_food/${foodId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.text())
+                .then(result => {
+                    if (result === 'success') {
+                        alert('修改成功');
+                        location.reload();
+                    } else {
+                        alert('修改失败');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        }
+
+        function closeModal() {
+            const modal = document.querySelector('.modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // 删除店铺
+        function deleteFood() {
+            const foodId = "{{ food.id }}";
+            if (confirm('确定要删除这个店铺吗？')) {
+                fetch(`/delete_food/${foodId}`, {
+                    method: 'POST',
+                })
+                .then(response => response.text())
+                .then(result => {
+                    if (result === 'success') {
+                        alert('删除成功');
+                        window.location.href = '/';  // 删除后跳转到首页
+                    } else {
+                        alert('删除失败');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+    </script>
+</body>
+</html> 

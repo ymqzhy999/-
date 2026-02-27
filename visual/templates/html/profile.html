@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账号信息 - 大众点评美食数据可视化分析</title>
+    <link rel="stylesheet" href="../../static/css/dmaku2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #fff6e0 0%, #ffe0e9 100%);
+            min-height: 100vh;
+        }
+        .profile-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px 30px 40px 30px;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.08);
+        }
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0 10px 0;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border-radius: 10px;
+            color: white;
+        }
+        .profile-header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        .avatar-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .avatar-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            background-size: cover;
+            background-position: center;
+            border: 3px solid #eee;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .btn-save {
+            width: 100%;
+            background: linear-gradient(90deg, #ff6b6b 60%, #ff8e8e 100%);
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 0;
+            margin-top: 10px;
+            box-shadow: 0 2px 8px rgba(255,107,107,0.08);
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-save:hover {
+            background: linear-gradient(90deg, #ff8e8e 60%, #ff6b6b 100%);
+            box-shadow: 0 4px 16px rgba(255,107,107,0.18);
+            transform: translateY(-2px) scale(1.03);
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-header">
+            <h1><i class="fas fa-id-card"></i> 账号信息</h1>
+        </div>
+        <div class="avatar-section">
+            <div class="avatar-preview" id="avatarPreview" style="background-image: url('/static/{% if userinfo.avatar %}{{ userinfo.avatar }}{% else %}images/default-avatar.png{% endif %}')"></div>
+            <input type="file" id="avatarInput" accept="image/*" style="display: none">
+            <button class="btn" onclick="document.getElementById('avatarInput').click()">更换头像</button>
+        </div>
+        <form id="profileForm">
+            <div class="form-group">
+                <label>账号</label>
+                <input type="text" id="account" name="account" value="{{ userinfo.account }}">
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" id="password" name="password" placeholder="输入新密码">
+            </div>
+            <div class="form-group">
+                <label>确认密码</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="再次输入新密码">
+            </div>
+            <button type="button" class="btn-save" onclick="updateProfile()">
+                <i class="fas fa-save"></i> 保存修改
+            </button>
+        </form>
+    </div>
+    <script src="../../static/js/jquery.js"></script>
+    <script src="../../static/lib/layer/layer.js"></script>
+    <script>
+        // 头像上传预览
+        document.getElementById('avatarInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('avatarPreview').style.backgroundImage = `url(${e.target.result})`;
+                    uploadAvatar(file);
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+        function uploadAvatar(file) {
+            const formData = new FormData();
+            formData.append('avatar', file);
+            $.ajax({
+                url: '/user/avatar',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response === 'success') {
+                        layer.msg('头像上传成功');
+                        const newAvatar = '/static/images/pic/' + $('#avatarInput')[0].files[0].name;
+                        document.getElementById('avatarPreview').style.backgroundImage = `url(${newAvatar})`;
+                        if (window.parent && window.parent.document.getElementById('navAvatar')) {
+                            window.location.reload()
+                            window.parent.document.getElementById('navAvatar').src = newAvatar + '?t=' + new Date().getTime();
+                        }
+                    } else {
+                        layer.msg('头像上传失败');
+                    }
+                }
+            });
+        }
+        function updateProfile() {
+            const account = $('#account').val();
+            const password = $('#password').val();
+            const confirmPassword = $('#confirmPassword').val();
+            if (password && password !== confirmPassword) {
+                return layer.msg('两次输入的密码不一致');
+            }
+            $.ajax({
+                url: '/user/profile',
+                type: 'POST',
+                data: {
+                    account: account,
+                    password: password
+                },
+                success: function(response) {
+                    if (response === '修改成功') {
+                        layer.msg('账号信息更新成功');
+                    } else {
+                        layer.msg(response);
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html> 

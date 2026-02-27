@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>编辑用户信息</title>
+    <link rel="stylesheet" href="../../static/css/xadmin.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #fffbe6 0%, #ffe0e9 100%);
+            min-height: 100vh;
+            font-family: 'ZCOOL KuaiLe', '微软雅黑', sans-serif;
+        }
+        .x-body {
+            max-width: 600px;
+            margin: 60px auto;
+            background: rgba(255,255,255,0.85);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px #ffb19944;
+            padding: 2.5rem 2rem 2rem 2rem;
+            backdrop-filter: blur(6px);
+            border: 2px solid #ffe0e9;
+        }
+        h2 {
+            color: #ff7e5f;
+            font-size: 2.2rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 8px #ffb19933;
+        }
+        .layui-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+        .layui-table th, .layui-table td {
+            padding: 0.8rem;
+            border: 1px solid #ffe0e9;
+        }
+        .layui-table th {
+            background: linear-gradient(90deg, #ffb199 0%, #ff7e5f 100%);
+            color: white;
+            font-weight: bold;
+        }
+        .layui-table input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ffb199;
+            border-radius: 4px;
+        }
+        .layui-btn, .layui-btn-primary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 48px;
+            line-height: 1;
+        }
+        .layui-btn {
+            background: linear-gradient(90deg, #ffb199 0%, #ff7e5f 100%);
+            color: white;
+            border: none;
+            border-radius: 18px;
+            padding: 0.7rem 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            box-shadow: 0 2px 8px #ffb19944;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        .layui-btn:hover {
+            background: linear-gradient(90deg, #ff7e5f 0%, #ffb199 100%);
+        }
+        .layui-btn-primary {
+            background: linear-gradient(90deg, #ffb199 0%, #ff7e5f 100%);
+            color: white;
+            border: none;
+            border-radius: 18px;
+            padding: 0.7rem 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            box-shadow: 0 2px 8px #ffb19944;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        .layui-btn-primary:hover {
+            background: linear-gradient(90deg, #ff7e5f 0%, #ffb199 100%);
+        }
+    </style>
+</head>
+<body>
+<div class="x-body">
+    <h2>编辑用户信息</h2>
+    <form method="post">
+        <table class="layui-table">
+            <tr>
+                <th>ID</th>
+                <td>{{ user[0] }}</td>
+            </tr>
+            <tr>
+                <th>账号</th>
+                <td>{{ user[2] }}</td>
+            </tr>
+            <tr>
+                <th>姓名</th>
+                <td><input type="text" name="name" value="{{ user[1] }}" required></td>
+            </tr>
+            <tr>
+                <th>学院</th>
+                <td><input type="text" name="company" value="{{ user[3] }}"></td>
+            </tr>
+            <tr>
+                <th>电话</th>
+                <td><input type="text" name="phone" value="{{ user[4] }}"></td>
+            </tr>
+            <tr>
+                <th>邮箱</th>
+                <td><input type="email" name="mail" value="{{ user[5] }}"></td>
+            </tr>
+        </table>
+        <button type="submit" class="layui-btn">保存修改</button>
+        <a href="/user/list" class="layui-btn layui-btn-primary">返回列表</a>
+    </form>
+</div>
+</body>
+</html> 

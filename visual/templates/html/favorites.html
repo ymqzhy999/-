@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的收藏 - 大众点评美食数据可视化分析</title>
+    <link rel="stylesheet" href="../../static/css/dmaku2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #fff6e0 0%, #ffe0e9 100%);
+            min-height: 100vh;
+        }
+        .favorites-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px 30px 40px 30px;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.08);
+        }
+        .favorites-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0 10px 0;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border-radius: 10px;
+            color: white;
+        }
+        .favorites-header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        .favorite-list {
+            margin-top: 10px;
+        }
+        .favorite-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 18px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .favorite-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .favorite-meta {
+            font-size: 13px;
+            color: #999;
+            margin-left: 15px;
+        }
+        .favorite-icon {
+            width: 36px;
+            height: 36px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            margin-right: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="favorites-container">
+        <div class="favorites-header">
+            <h1><i class="fas fa-heart"></i> 我的收藏</h1>
+        </div>
+        <div class="favorite-list" id="favoriteList"></div>
+    </div>
+    <script src="../../static/js/jquery.js"></script>
+    <script>
+        // 加载收藏列表
+        function loadFavorites() {
+            $.ajax({
+                url: '/user/favorites/data',
+                type: 'GET',
+                success: function(response) {
+                    const favoriteList = $('#favoriteList');
+                    favoriteList.empty();
+                    if (response.length === 0) {
+                        favoriteList.append('<div style="color:#888;text-align:center;">暂无收藏美食</div>');
+                        return;
+                    }
+                    response.forEach(item => {
+                        favoriteList.append(`
+                            <div class="favorite-item">
+                                <div class="favorite-icon"><i class="fas fa-utensils"></i></div>
+                                <div class="favorite-title">${item.title}</div>
+                                <div class="favorite-meta">
+                                    <i class="fas fa-comments"></i> ${item.comment_count}条评论
+                                    <i class="fas fa-heart" style="margin-left:10px;"></i> ${item.favorite_count}人收藏
+                                </div>
+                            </div>`);
+                    });
+                }
+            });
+        }
+        $(document).ready(function() {
+            loadFavorites();
+        });
+    </script>
+</body>
+</html> 

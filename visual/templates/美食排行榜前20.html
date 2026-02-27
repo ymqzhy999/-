@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Awesome-pyecharts</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+</head>
+<body>
+
+        <style>
+            .fl-table {
+                margin: 20px;
+                border-radius: 5px;
+                font-size: 12px;
+                border: none;
+                border-collapse: collapse;
+                max-width: 100%;
+                white-space: nowrap;
+                word-break: keep-all;
+            }
+
+            .fl-table th {
+                text-align: left;
+                font-size: 20px;
+            }
+
+            .fl-table tr {
+                display: table-row;
+                vertical-align: inherit;
+                border-color: inherit;
+            }
+
+            .fl-table tr:hover td {
+                background: #00d1b2;
+                color: #F8F8F8;
+            }
+
+            .fl-table td, .fl-table th {
+                border-style: none;
+                border-top: 1px solid #dbdbdb;
+                border-left: 1px solid #dbdbdb;
+                border-bottom: 3px solid #dbdbdb;
+                border-right: 1px solid #dbdbdb;
+                padding: .5em .55em;
+                font-size: 15px;
+            }
+
+            .fl-table td {
+                border-style: none;
+                font-size: 15px;
+                vertical-align: center;
+                border-bottom: 1px solid #dbdbdb;
+                border-left: 1px solid #dbdbdb;
+                border-right: 1px solid #dbdbdb;
+                height: 30px;
+            }
+
+            .fl-table tr:nth-child(even) {
+                background: #F8F8F8;
+            }
+        </style>
+        <div id="bd50b1540a81488e9a858db17c11ea78" class="chart-container" style="">
+            <p class="title" style="font-size: 18px; font-weight:bold;" > 美食排行榜前20</p>
+            <p class="subtitle" style="font-size: 12px;" > </p>
+            <table class="fl-table">
+    <thead>
+        <tr>
+            <th><i class="fas fa-utensils" style="color:#FFB347"></i> 美食名称</th>
+            <th><i class="fas fa-comments" style="color:#FF6F61"></i> 评论数</th>
+            <th><i class="fas fa-yen-sign" style="color:#FFD700"></i> 均价</th>
+            <th><i class="fas fa-drumstick-bite" style="color:#FFB347"></i> 类型</th>
+            <th><i class="fas fa-map-marker-alt" style="color:#6EC6FF"></i> 区域</th>
+            <th><i class="fas fa-pepper-hot" style="color:#FF6F61"></i> 推荐菜</th>
+            <th><i class="fas fa-star" style="color:#FFD700"></i> 被收藏数</th>
+            <th><i class="fas fa-heart" style="color:#FF6F61"></i> 操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in foods %}
+            <tr>
+                <td>
+
+                    {{ item.title }}
+                </td>
+                <td>{{ item.comment_count }}</td>
+                <td>{{ item.averge_price }}</td>
+                <td>{{ item.type }}</td>
+                <td>{{ item.area }}</td>
+                <td>{{ item.recommend }}</td>
+                <td class="favorite-count">{{ item.favorite_count }}</td>
+                <td>
+                    <button class="btn favorite-btn"
+                            data-id="{{ item.id }}"
+                            data-favorited="{{ 'true' if item.is_favorited else 'false' }}">
+                        <i class="fa-star fa-lg fa-fw {{ 'fas' if item.is_favorited else 'far' }}" style="color: #FFD700;"></i>
+                        <i class="fas fa-heart" style="color:#FF6F61; margin-left:2px;"></i>
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+        </div>
+
+<script>
+$(document).on('click', '.favorite-btn', function() {
+    var btn = $(this);
+    var foodId = btn.data('id');
+    if (!foodId) {
+        alert('美食ID缺失');
+        return;
+    }
+    var isFavorited = btn.data('favorited') === true || btn.data('favorited') === 'true';
+    var icon = btn.find('i');
+    if (!isFavorited) {
+        btn.prop('disabled', true);
+        $.post('/user/favorite/add', {id: foodId}, function(res) {
+            if (res === 'success') {
+                btn.data('favorited', true);
+                icon.removeClass('far').addClass('fas');
+                var countTd = btn.closest('tr').find('.favorite-count');
+                countTd.text(parseInt(countTd.text()) + 1);
+            } else {
+                alert(res);
+            }
+            btn.prop('disabled', false);
+        });
+    } else {
+        btn.prop('disabled', true);
+        $.post('/user/favorite/remove', {id: foodId}, function(res) {
+            if (res === 'success') {
+                btn.data('favorited', false);
+                icon.removeClass('fas').addClass('far');
+                var countTd = btn.closest('tr').find('.favorite-count');
+                countTd.text(parseInt(countTd.text()) - 1);
+            } else {
+                alert(res);
+            }
+            btn.prop('disabled', false);
+        });
+    }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>后台管理控制页面</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <link rel="stylesheet" href="../../static/css/font.css">
+    <link rel="stylesheet" href="../../static/css/xadmin.css">
+    <script src="../../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../../static/lib/layui/layui.js" charset="utf-8"></script>
+    <script src="../../static/js/welcom.js"></script>
+</head>
+<body>
+<div class="x-body layui-anim layui-anim-up">
+    <blockquote class="layui-elem-quote">欢迎!
+        <span class="x-red"></span>！当前时间:
+        <span id="datetime">
+					<script>
+						setInterval("document.getElementById('datetime').innerHTML=new Date().toLocaleString();", 1000);
+					</script>
+				</span>
+    </blockquote>
+
+    <fieldset class="layui-elem-field">
+        <legend>个人信息</legend>
+        <div class="layui-field-box">
+            <table class="layui-table">
+                <tbody>
+                <tr>
+                    <th>学院</th>
+                    <td>{{ userinfo.company }}</td>
+                </tr>
+                <tr>
+                    <th>专业</th>
+                    <td>{{ userinfo.major }}</td>
+                </tr>
+                <tr>
+                    <th>姓名</th>
+                    <td>{{ userinfo.name }}</td>
+                </tr>
+                <tr>
+                    <th>学号</th>
+                    <td>{{ userinfo.student_id }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </fieldset>
+
+</div>
+
+</body>
+</html>

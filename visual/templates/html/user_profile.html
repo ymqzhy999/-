@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>账号设置</title>
+    <link rel="stylesheet" href="../../static/css/xadmin.css">
+</head>
+<body>
+<div class="x-body">
+    <h2>账号设置</h2>
+    <form method="post">
+        <table class="layui-table">
+            <tr>
+                <th>账号</th>
+                <td><input type="text" name="account" value="{{ userinfo[0] }}" required></td>
+            </tr>
+            <tr>
+                <th>密码</th>
+                <td><input type="password" name="password" value="{{ userinfo[1] }}" required></td>
+            </tr>
+        </table>
+        <button type="submit" class="layui-btn">保存修改</button>
+    </form>
+</div>
+</body>
+</html> 
