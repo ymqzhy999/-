@@ -34,3 +34,10 @@
    在项目根目录下运行以下命令安装所需 Python 包：
    ```bash
    pip install -r requirements.txt
+
+2. **数据库导入**
+   将 data/food.sql 导入到你的 MySQL 数据库中，并修改对应的数据库连接配置。
+
+3. **运行项目**
+  启动入口文件： python visual/app.py
+  随后在浏览器中访问控制台输出的本地地址即可。
